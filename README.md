@@ -2,6 +2,8 @@
 
 面向车辆检测机构的多租户检测工作台，包含检测师微信小程序、响应式机构后台、平台运营后台、NestJS API 和无登录只读报告 H5。
 
+前端预览：`https://bestforyo.github.io/vehicle-inspection/`。预览由 GitHub Pages 自动部署；生产 API 与 PostgreSQL 需按下方部署章节单独配置。
+
 ## 已实现
 
 - 国标/团标下三非、四非、整车、新车八套动态模板；摩托车与新能源创建入口关闭。
