@@ -10,6 +10,7 @@ export default defineAppConfig({
     'pages/inspection/index',
     'pages/vehicle/index',
     'pages/report/index',
+    'pages/settings/index',
   ],
   window: {
     backgroundTextStyle: 'light',

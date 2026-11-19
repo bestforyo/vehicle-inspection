@@ -1,6 +1,6 @@
 # 鉴见 · 车辆检测 SaaS
 
-面向车辆检测机构的多租户检测工作台，包含检测师微信小程序、响应式机构后台、平台运营后台、NestJS API 和无登录只读报告 H5。
+面向车辆检测机构的多租户检测工作台。检测师和机构管理员均使用微信小程序，平台运营使用 Web 后台，委托人通过无登录只读 H5 查看报告；后端采用 NestJS API。
 
 前端预览：`https://bestforyo.github.io/vehicle-inspection/`。预览由 GitHub Pages 自动部署；生产 API 与 PostgreSQL 需按下方部署章节单独配置。
 
@@ -19,7 +19,7 @@
 ```text
 apps/
   api/                    NestJS + Prisma + PostgreSQL
-  web/                    React + Vite，机构/平台后台及公开报告 H5
+  web/                    React + Vite，平台运营后台及公开报告 H5
   inspector-miniapp/      Taro 4 + React + TypeScript
 packages/
   contracts/              共享类型、状态和业务枚举

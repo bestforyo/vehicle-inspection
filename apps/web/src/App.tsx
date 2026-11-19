@@ -20,7 +20,11 @@ import { VehiclePage } from './pages/VehiclePage';
 function Protected({ children }: { children: ReactNode }) {
   const { user, loading } = useAuth();
   if (loading) return <LoadingPage />;
-  return user ? children : <Navigate to="/login" replace />;
+  if (!user) return <Navigate to="/login" replace />;
+  if (!user.role.startsWith('PLATFORM')) {
+    return <main className="miniapp-required"><span className="brand-mark">鉴</span><h1>请使用微信小程序</h1><p>{user.role === 'ORG_ADMIN' ? '机构管理员的机构管理、审核、模板和报告操作均在小程序内完成。' : '检测师的订单创建、现场检测、审核进度和报告分享均在小程序内完成。'}</p><small>Web 后台仅供平台运营使用；委托人可通过机构分享的只读链接查看报告。</small></main>;
+  }
+  return children;
 }
 
 function HomeRoute() {

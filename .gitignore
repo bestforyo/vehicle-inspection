@@ -17,3 +17,6 @@ apps/inspector-miniapp/.alipay/
 playwright-report/
 test-results/
 .tmp/
+
+.vercel
+.env*

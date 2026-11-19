@@ -7,8 +7,8 @@ import { ErrorMessage } from '../components/Common';
 export function LoginPage() {
   const { login } = useAuth();
   const navigate = useNavigate();
-  const [email, setEmail] = useState('inspector@demo.jianjian.cn');
-  const [password, setPassword] = useState('Inspector123!');
+  const [email, setEmail] = useState('platform@demo.jianjian.cn');
+  const [password, setPassword] = useState('Platform123!');
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
@@ -35,12 +35,12 @@ export function LoginPage() {
     </section>
     <section className="login-form-panel">
       <form onSubmit={submit} className="login-form">
-        <span className="eyebrow">WELCOME BACK</span><h2>登录工作台</h2><p>使用机构分配的账号继续工作</p>
+        <span className="eyebrow">PLATFORM OPERATIONS</span><h2>平台运营后台</h2><p>仅限平台运营和平台超级管理员登录</p>
         {error && <ErrorMessage message={error} />}
         <label>工作账号<input type="email" autoComplete="username" value={email} onChange={(event) => setEmail(event.target.value)} required /></label>
         <label>登录密码<input type="password" autoComplete="current-password" value={password} onChange={(event) => setPassword(event.target.value)} required /></label>
         <button className="primary-button login-button" disabled={submitting}>{submitting ? '正在登录…' : <>进入工作台<ArrowRight size={18} /></>}</button>
-        <div className="demo-accounts"><strong>本地演示账号</strong><button type="button" onClick={() => { setEmail('inspector@demo.jianjian.cn'); setPassword('Inspector123!'); }}>检测师</button><button type="button" onClick={() => { setEmail('admin@demo.jianjian.cn'); setPassword('Admin123!'); }}>机构管理员</button><button type="button" onClick={() => { setEmail('platform@demo.jianjian.cn'); setPassword('Platform123!'); }}>平台运营</button><small>演示数据均为虚构，不得录入真实车主资料。</small></div>
+        <div className="demo-accounts"><strong>平台运营演示账号</strong><button type="button" onClick={() => { setEmail('platform@demo.jianjian.cn'); setPassword('Platform123!'); }}>平台运营</button><small>检测师和机构管理员请使用微信小程序。演示数据均为虚构。</small></div>
       </form>
     </section>
   </main>;
