@@ -2,7 +2,6 @@ import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
 import { mkdir, rm } from 'node:fs/promises';
 import { resolve } from 'node:path';
-import EmbeddedPostgres from 'embedded-postgres';
 import sharp from 'sharp';
 import type { InspectionAnswer, TemplateRevision } from '@jianjian/contracts';
 
@@ -13,7 +12,7 @@ const tempRoot = resolve('.tmp');
 await mkdir(tempRoot, { recursive: true });
 const databaseDir = resolve(tempRoot, `e2e-db-${Date.now()}`);
 const uploadDir = resolve(tempRoot, `e2e-uploads-${Date.now()}`);
-const pg = new EmbeddedPostgres({ databaseDir, user: 'postgres', password: 'postgres', port, persistent: false, autoRehydrateSymlinks: true, onLog: (message) => console.log(String(message).trim()), onError: (error) => console.error(error) });
+let pg: { initialise: () => Promise<void>; start: () => Promise<void>; createDatabase: (name: string) => Promise<void>; stop: () => Promise<void> } | undefined;
 let app: { close: () => Promise<void> } | undefined;
 
 async function call(path: string, method = 'GET', token = '', body?: unknown, headers: Record<string, string> = {}) {
@@ -30,6 +29,8 @@ async function login(email: string, password: string) {
 
 try {
   if (!process.env.TEST_DATABASE_URL) {
+    const { default: EmbeddedPostgres } = await import('embedded-postgres');
+    pg = new EmbeddedPostgres({ databaseDir, user: 'postgres', password: 'postgres', port, persistent: false, autoRehydrateSymlinks: true, onLog: (message) => console.log(String(message).trim()), onError: (error) => console.error(error) });
     console.log('E2E_STEP initialise');
     await pg.initialise();
     console.log('E2E_STEP start');
@@ -153,7 +154,7 @@ try {
   process.exitCode = 1;
 } finally {
   await app?.close();
-  await Promise.race([pg.stop(), new Promise<void>((resolve) => setTimeout(resolve, 3000))]);
+  await Promise.race([pg?.stop(), new Promise<void>((resolve) => setTimeout(resolve, 3000))]);
   await rm(databaseDir, { recursive: true, force: true });
   await rm(uploadDir, { recursive: true, force: true });
 }
