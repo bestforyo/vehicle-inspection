@@ -9,6 +9,7 @@ on:
       - 'packages/templates/**'
       - 'package*.json'
       - 'tsconfig.base.json'
+      - 'README.md'
       - '.github/workflows/pages.yml'
   workflow_dispatch:
 
