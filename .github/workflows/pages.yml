@@ -36,6 +36,8 @@ jobs:
         run: npm run build -w @jianjian/contracts && npm run build -w @jianjian/templates && npm run build -w @jianjian/web
         env:
           VITE_BASE_PATH: /vehicle-inspection/
+      - name: Add SPA fallback
+        run: cp apps/web/dist/index.html apps/web/dist/404.html
       - uses: actions/configure-pages@v5
         with:
           enablement: true
