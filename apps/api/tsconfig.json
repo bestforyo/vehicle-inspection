@@ -7,7 +7,7 @@
     "rootDir": "src",
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
-    "declaration": false,
+    "declaration": true,
     "declarationMap": false,
     "sourceMap": true
   },

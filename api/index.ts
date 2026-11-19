@@ -1,7 +1,7 @@
 import 'reflect-metadata';
 import serverless from 'serverless-http';
 import type { Request, Response } from 'express';
-import { createNestApp } from '../apps/api/src/app.setup';
+import { createNestApp } from '../apps/api/dist/app.setup.js';
 
 let serverHandler: ((request: Request, response: Response) => Promise<unknown>) | undefined;
 

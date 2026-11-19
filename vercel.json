@@ -1,5 +1,5 @@
 {
-  "buildCommand": "npm run prisma:generate && npm run build -w @jianjian/contracts && npm run build -w @jianjian/templates && npm run build -w @jianjian/web",
+  "buildCommand": "npm run prisma:generate && npm run build -w @jianjian/contracts && npm run build -w @jianjian/templates && npm run build -w @jianjian/api && npm run build -w @jianjian/web",
   "outputDirectory": "apps/web/dist",
   "installCommand": "npm ci",
   "functions": {
