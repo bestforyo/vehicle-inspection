@@ -1,7 +1,17 @@
 {
-  "buildCommand": "npm run build -w @jianjian/contracts && npm run build -w @jianjian/templates && npm run build -w @jianjian/web",
+  "buildCommand": "npm run prisma:generate && npm run build -w @jianjian/contracts && npm run build -w @jianjian/templates && npm run build -w @jianjian/web",
   "outputDirectory": "apps/web/dist",
   "installCommand": "npm ci",
+  "functions": {
+    "api/**/*.ts": {
+      "maxDuration": 60,
+      "memory": 1024
+    },
+    "public/**/*.ts": {
+      "maxDuration": 60,
+      "memory": 1024
+    }
+  },
   "rewrites": [
     { "source": "/(.*)", "destination": "/index.html" }
   ]

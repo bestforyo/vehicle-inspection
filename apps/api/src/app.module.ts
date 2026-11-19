@@ -6,6 +6,7 @@ import { AdminController } from './admin.controller';
 import { AdminService } from './admin.service';
 import { PlatformController } from './platform.controller';
 import { HealthController } from './health.controller';
+import { StorageService } from './storage.service';
 import { AuthController } from './auth.controller';
 import { AuthGuard, AuthService } from './auth';
 import { BusinessController } from './business.controller';
@@ -26,6 +27,6 @@ import { SeedService } from './seed.service';
     }),
   ],
   controllers: [AuthController, BusinessController, MediaController, PublicController, AdminController, PlatformController, HealthController],
-  providers: [PrismaService, AuthService, AuthGuard, BusinessService, MediaService, PublicService, SeedService, AdminService],
+  providers: [PrismaService, AuthService, AuthGuard, BusinessService, MediaService, PublicService, SeedService, AdminService, StorageService],
 })
 export class AppModule {}

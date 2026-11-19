@@ -121,9 +121,17 @@ docker run --env-file apps/api/.env -p 3000:3000 jianjian-api
 4. 配置持久化磁盘或私有对象存储，执行数据库备份与恢复演练。
 5. 使用随机生产密钥，关闭演示种子，完成专业人员模板复核。
 
-### Vercel 静态 Web
+### Vercel + Supabase
 
-仓库根目录包含 `vercel.json`。部署时设置 `VITE_API_BASE_URL` 为独立 API 地址；Vercel 静态托管本身不提供 PostgreSQL、持久媒体或 NestJS 常驻服务。
+仓库根目录的 `api/`、`public/` 包含 Vercel Functions，`apps/api/src/storage.service.ts` 同时支持本地磁盘和 Supabase Storage。首次部署：
+
+1. 在 Supabase 创建项目，将事务连接池地址配置为 `DATABASE_URL`，并添加 `pgbouncer=true&connection_limit=1`；迁移时临时改用 5432 直连地址。
+2. 创建私有桶 `inspection-evidence`，配置 `SUPABASE_URL`、`SUPABASE_SERVICE_ROLE_KEY`、`SUPABASE_STORAGE_BUCKET` 和 `STORAGE_DRIVER=supabase`。服务角色密钥只能放在 Vercel 服务端环境变量中。
+3. 在 Vercel 导入仓库并设置三个独立随机密钥、`CORS_ORIGINS`、`PUBLIC_REPORT_BASE_URL=https://<project>.vercel.app/r`、`SEED_DEMO=false`。
+4. 使用数据库直连地址执行 `npm run prisma:deploy`，再执行 Vercel 部署。需要演示账号时仅在首次初始化阶段临时开启种子，随后立即关闭。
+5. 验证 `/api/v1/health`、登录、照片上传、报告分享及撤销。Vercel Functions 请求体有平台大小限制，现场照片应继续使用客户端压缩。
+
+`VITE_API_BASE_URL` 留空即可让同域前端访问 `/api` 和 `/public`。Hobby 仅用于个人/非商业演示，正式商业运行需评估付费计划与额度。
 
 ## CI
 

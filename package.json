@@ -9,7 +9,7 @@
   "scripts": {
     "dev": "concurrently -n api,web -c green,cyan \"npm run dev -w @jianjian/api\" \"npm run dev -w @jianjian/web\"",
     "build": "npm run build -w @jianjian/contracts && npm run build -w @jianjian/templates && npm run build -w @jianjian/api && npm run build -w @jianjian/web && npm run build -w @jianjian/inspector-miniapp",
-    "typecheck": "npm run typecheck --workspaces --if-present",
+    "typecheck": "npm run typecheck --workspaces --if-present && tsc -p tsconfig.vercel.json",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "tsx --tsconfig apps/api/tsconfig.json apps/api/src/e2e.mts",

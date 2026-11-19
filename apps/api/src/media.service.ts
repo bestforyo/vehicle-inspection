@@ -1,9 +1,8 @@
 import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { createHash, createHmac, randomUUID, timingSafeEqual } from 'node:crypto';
-import { mkdir, readFile, writeFile } from 'node:fs/promises';
-import { resolve } from 'node:path';
 import sharp, { type Metadata } from 'sharp';
+import { StorageService } from './storage.service';
 import type { InspectionAnswer, TemplateRevision } from '@jianjian/contracts';
 import type { Prisma } from '@prisma/client';
 import { PrismaService } from './prisma.service';
@@ -11,17 +10,7 @@ import type { AuthUser } from './auth';
 
 @Injectable()
 export class MediaService {
-  constructor(private readonly prisma: PrismaService, private readonly config: ConfigService) {}
-
-  private uploadRoot() {
-    return resolve(this.config.get<string>('UPLOAD_DIR', './uploads'));
-  }
-
-  private assetPath(objectKey: string) {
-    const path = resolve(this.uploadRoot(), objectKey);
-    if (!path.startsWith(`${this.uploadRoot()}\\`) && !path.startsWith(`${this.uploadRoot()}/`)) throw new ForbiddenException();
-    return path;
-  }
+  constructor(private readonly prisma: PrismaService, private readonly config: ConfigService, private readonly storage: StorageService) {}
 
   async upload(user: AuthUser, file: Express.Multer.File, orderId: string, itemKey: string) {
     if (!user.tenantId) throw new ForbiddenException();
@@ -50,12 +39,9 @@ export class MediaService {
     const extension = metadata.format === 'jpeg' ? 'jpg' : metadata.format;
     const objectKey = `${user.tenantId}/${id}/original.${extension}`;
     const previewKey = `${user.tenantId}/${id}/preview.webp`;
-    const originalPath = this.assetPath(objectKey);
-    const previewPath = this.assetPath(previewKey);
-    await mkdir(resolve(originalPath, '..'), { recursive: true });
-    await mkdir(resolve(previewPath, '..'), { recursive: true });
-    await writeFile(originalPath, file.buffer, { flag: 'wx' });
-    await sharp(file.buffer).rotate().resize({ width: 720, height: 720, fit: 'inside', withoutEnlargement: true }).webp({ quality: 76 }).toFile(previewPath);
+    const preview = await sharp(file.buffer).rotate().resize({ width: 720, height: 720, fit: 'inside', withoutEnlargement: true }).webp({ quality: 76 }).toBuffer();
+    await this.storage.putObject(objectKey, file.buffer, file.mimetype);
+    await this.storage.putObject(previewKey, preview, 'image/webp');
     const sha256 = createHash('sha256').update(file.buffer).digest('hex');
     await this.prisma.$transaction(async (tx) => {
       await tx.mediaAsset.create({ data: { id, tenantId: user.tenantId!, ownerType: 'INSPECTION_REVISION', ownerId: revision.id, objectKey, previewKey, mime: file.mimetype, size: file.size, width: metadata.width, height: metadata.height, sha256, scanStatus: 'READY', createdBy: user.id } });
@@ -94,6 +80,7 @@ export class MediaService {
     if (!asset || asset.scanStatus !== 'READY') throw new NotFoundException('照片不存在。');
     const key = variant === 'preview' ? asset.previewKey : asset.objectKey;
     if (!key) throw new NotFoundException('照片预览不存在。');
-    return { buffer: await readFile(this.assetPath(key)), mime: variant === 'preview' ? 'image/webp' : asset.mime };
+    const object = await this.storage.getObject(key);
+    return { buffer: object.buffer, mime: variant === 'preview' ? 'image/webp' : asset.mime };
   }
 }
