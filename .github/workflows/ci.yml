@@ -33,6 +33,10 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci --no-audit --no-fund
+      - name: Prepare generated types
+        run: npm run prisma:generate && npm run build -w @jianjian/contracts && npm run build -w @jianjian/templates
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/jianjian_e2e
       - run: npm run lint
       - run: npm run typecheck
       - run: npm test
