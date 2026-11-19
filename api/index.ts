@@ -15,6 +15,8 @@ async function getHandler() {
 }
 
 export default async function handler(request: Request, response: Response) {
+  const originalPath = request.headers['x-vercel-original-path'] ?? request.headers['x-vercel-original-url'];
+  if (typeof originalPath === 'string') request.url = originalPath;
   const handle = await getHandler();
   return handle(request, response);
 }
