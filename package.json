@@ -1,0 +1,32 @@
+{
+  "name": "jianjian-vehicle-inspection",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "concurrently -n api,web -c green,cyan \"npm run dev -w @jianjian/api\" \"npm run dev -w @jianjian/web\"",
+    "build": "npm run build -w @jianjian/contracts && npm run build -w @jianjian/templates && npm run build -w @jianjian/api && npm run build -w @jianjian/web && npm run build -w @jianjian/inspector-miniapp",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:e2e": "tsx --tsconfig apps/api/tsconfig.json apps/api/src/e2e.mts",
+    "lint": "eslint .",
+    "prisma:generate": "prisma generate --schema apps/api/prisma/schema.prisma",
+    "prisma:migrate": "prisma migrate dev --schema apps/api/prisma/schema.prisma",
+    "prisma:deploy": "prisma migrate deploy --schema apps/api/prisma/schema.prisma"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "concurrently": "^9.1.2",
+    "eslint": "^10.15.0",
+    "typescript": "^5.7.3",
+    "typescript-eslint": "^8.73.0",
+    "vitest": "^3.0.5"
+  },
+  "engines": {
+    "node": ">=22.0.0"
+  }
+}

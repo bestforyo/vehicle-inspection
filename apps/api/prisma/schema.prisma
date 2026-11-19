@@ -1,0 +1,363 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Tenant {
+  id          String               @id @default(uuid()) @db.Uuid
+  name        String
+  code        String               @unique
+  status      String               @default("ACTIVE")
+  planName    String               @default("专业版")
+  expiresAt   DateTime?
+  settings    Json                 @default("{}")
+  displayName String
+  logoText    String               @default("鉴")
+  reportTheme String               @default("deep-green")
+  createdAt   DateTime             @default(now())
+  updatedAt   DateTime             @updatedAt
+  memberships Membership[]
+  users       User[]
+  templates   Template[]
+  vehicles    Vehicle[]
+  orders      Order[]
+  revisions   InspectionRevision[]
+  media       MediaAsset[]
+  reviews     ReviewRecord[]
+  reports     Report[]
+  shares      ReportShare[]
+  audits      AuditEvent[]
+}
+
+model User {
+  id           String        @id @default(uuid()) @db.Uuid
+  email        String        @unique
+  phoneHash    String?       @unique
+  wechatOpenidHash String?   @unique
+  passwordHash String
+  displayName  String
+  role         String
+  status       String        @default("ACTIVE")
+  tenantId     String?       @db.Uuid
+  tenant       Tenant?       @relation(fields: [tenantId], references: [id])
+  membership   Membership?
+  sessions     AuthSession[]
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+}
+
+model Membership {
+  id       String   @id @default(uuid()) @db.Uuid
+  tenantId String   @db.Uuid
+  userId   String   @unique @db.Uuid
+  role     String
+  status   String   @default("ACTIVE")
+  joinedAt DateTime @default(now())
+  tenant   Tenant   @relation(fields: [tenantId], references: [id])
+  user     User     @relation(fields: [userId], references: [id])
+
+  @@unique([tenantId, userId])
+  @@index([tenantId, status])
+}
+
+model AuthSession {
+  id               String    @id @default(uuid()) @db.Uuid
+  userId           String    @db.Uuid
+  refreshTokenHash String    @unique
+  expiresAt        DateTime
+  revokedAt        DateTime?
+  user             User      @relation(fields: [userId], references: [id])
+  createdAt        DateTime  @default(now())
+
+  @@index([userId, expiresAt])
+}
+
+model StandardRevision {
+  id             String             @id
+  standardCode   String
+  title          String
+  versionLabel   String
+  effectiveAt    DateTime           @default(now())
+  scope          String
+  approvalStatus String             @default("DEMO_REVIEW_REQUIRED")
+  sourceFileHash String?
+  templates      TemplateRevision[]
+  createdAt      DateTime           @default(now())
+  updatedAt      DateTime           @updatedAt
+
+  @@unique([standardCode, versionLabel])
+}
+
+model Template {
+  id           String             @id
+  tenantId     String             @db.Uuid
+  standardCode String
+  kind         String
+  vehicleUse   String             @default("USED")
+  packageCode  String
+  packageName  String
+  status       String             @default("PUBLISHED")
+  tenant       Tenant             @relation(fields: [tenantId], references: [id])
+  revisions    TemplateRevision[]
+  createdAt    DateTime           @default(now())
+  updatedAt    DateTime           @updatedAt
+
+  @@unique([tenantId, standardCode, kind, packageCode])
+  @@index([tenantId, kind, status])
+}
+
+model TemplateRevision {
+  id                 String           @id
+  tenantId           String           @db.Uuid
+  templateId         String
+  revisionNumber     Int
+  standardRevisionId String
+  schema             Json
+  status             String           @default("DRAFT")
+  publishedAt        DateTime?
+  publishedBy        String?          @db.Uuid
+  template           Template         @relation(fields: [templateId], references: [id])
+  standardRevision   StandardRevision @relation(fields: [standardRevisionId], references: [id])
+  orders             Order[]
+  createdAt          DateTime         @default(now())
+  updatedAt          DateTime         @updatedAt
+
+  @@unique([templateId, revisionNumber])
+  @@index([tenantId, status])
+}
+
+model Vehicle {
+  id                String    @id @default(uuid()) @db.Uuid
+  tenantId          String    @db.Uuid
+  kind              String
+  vinCiphertext     String?
+  vinHash           String?
+  plateCiphertext   String?
+  brand             String    @default("")
+  model             String    @default("")
+  year              Int?
+  firstRegisteredAt DateTime?
+  mileage           Int?
+  tenant            Tenant    @relation(fields: [tenantId], references: [id])
+  orders            Order[]
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  @@index([tenantId, vinHash])
+}
+
+model Order {
+  id                    String               @id @default(uuid()) @db.Uuid
+  tenantId              String               @db.Uuid
+  orderNo               String
+  vehicleId             String               @db.Uuid
+  templateRevisionId    String
+  assignedInspectorId   String               @db.Uuid
+  status                String               @default("PENDING_INSPECTION")
+  currentRevisionId     String?              @db.Uuid
+  createdBy             String               @db.Uuid
+  clientName            String?
+  clientPhoneCiphertext String?
+  tenant                Tenant               @relation(fields: [tenantId], references: [id])
+  vehicle               Vehicle              @relation(fields: [vehicleId], references: [id])
+  templateRevision      TemplateRevision     @relation(fields: [templateRevisionId], references: [id])
+  revisions             InspectionRevision[]
+  reviews               ReviewRecord[]
+  reports               Report[]
+  createdAt             DateTime             @default(now())
+  updatedAt             DateTime             @updatedAt
+
+  @@unique([tenantId, orderNo])
+  @@index([tenantId, status, createdAt(sort: Desc)])
+  @@index([tenantId, assignedInspectorId, status, createdAt(sort: Desc)])
+}
+
+model InspectionRevision {
+  id                String               @id @default(uuid()) @db.Uuid
+  tenantId          String               @db.Uuid
+  orderId           String               @db.Uuid
+  revisionNumber    Int
+  lockVersion       Int                  @default(1)
+  status            String               @default("DRAFT")
+  schemaSnapshot    Json
+  submittedBy       String?              @db.Uuid
+  submittedAt       DateTime?
+  contentHash       String?
+  basedOnRevisionId String?              @db.Uuid
+  tenant            Tenant               @relation(fields: [tenantId], references: [id])
+  order             Order                @relation(fields: [orderId], references: [id])
+  answers           InspectionAnswer[]
+  evidence          InspectionEvidence[]
+  reviews           ReviewRecord[]
+  reports           Report[]
+  createdAt         DateTime             @default(now())
+  updatedAt         DateTime             @updatedAt
+
+  @@unique([orderId, revisionNumber])
+  @@index([tenantId, status, submittedAt])
+}
+
+model InspectionAnswer {
+  id         String             @id @default(uuid()) @db.Uuid
+  tenantId   String             @db.Uuid
+  revisionId String             @db.Uuid
+  itemKey    String
+  sectionKey String
+  answer     Json
+  note       String?
+  updatedBy  String             @db.Uuid
+  revision   InspectionRevision @relation(fields: [revisionId], references: [id], onDelete: Cascade)
+  createdAt  DateTime           @default(now())
+  updatedAt  DateTime           @updatedAt
+
+  @@unique([revisionId, itemKey])
+  @@index([tenantId, revisionId])
+}
+
+model MediaAsset {
+  id         String               @id @default(uuid()) @db.Uuid
+  tenantId   String               @db.Uuid
+  ownerType  String
+  ownerId    String               @db.Uuid
+  objectKey  String
+  previewKey String?
+  mime       String
+  size       Int
+  width      Int?
+  height     Int?
+  sha256     String
+  scanStatus String               @default("PENDING")
+  createdBy  String               @db.Uuid
+  tenant     Tenant               @relation(fields: [tenantId], references: [id])
+  evidence   InspectionEvidence[]
+  createdAt  DateTime             @default(now())
+  updatedAt  DateTime             @updatedAt
+
+  @@index([tenantId, ownerType, ownerId])
+}
+
+model InspectionEvidence {
+  id         String             @id @default(uuid()) @db.Uuid
+  tenantId   String             @db.Uuid
+  revisionId String             @db.Uuid
+  itemKey    String
+  assetId    String             @db.Uuid
+  category   String             @default("SITE")
+  caption    String?
+  sortOrder  Int                @default(0)
+  capturedAt DateTime           @default(now())
+  revision   InspectionRevision @relation(fields: [revisionId], references: [id], onDelete: Cascade)
+  asset      MediaAsset         @relation(fields: [assetId], references: [id])
+
+  @@unique([revisionId, itemKey, assetId])
+  @@index([tenantId, revisionId, itemKey])
+  @@index([assetId])
+}
+
+model ReviewRecord {
+  id             String             @id @default(uuid()) @db.Uuid
+  tenantId       String             @db.Uuid
+  orderId        String             @db.Uuid
+  revisionId     String             @db.Uuid
+  reviewerId     String             @db.Uuid
+  decision       String
+  comment        String?
+  targetItemKeys String[]           @default([])
+  tenant         Tenant             @relation(fields: [tenantId], references: [id])
+  order          Order              @relation(fields: [orderId], references: [id])
+  revision       InspectionRevision @relation(fields: [revisionId], references: [id])
+  createdAt      DateTime           @default(now())
+
+  @@index([tenantId, orderId, createdAt])
+}
+
+model Report {
+  id                 String             @id @default(uuid()) @db.Uuid
+  tenantId           String             @db.Uuid
+  orderId            String             @db.Uuid
+  revisionId         String             @db.Uuid
+  reportNo           String
+  versionNumber      Int                @default(1)
+  status             String             @default("PUBLISHED")
+  snapshot           Json
+  contentHash        String
+  publishedAt        DateTime           @default(now())
+  publishedBy        String             @db.Uuid
+  supersedesReportId String?            @db.Uuid
+  tenant             Tenant             @relation(fields: [tenantId], references: [id])
+  order              Order              @relation(fields: [orderId], references: [id])
+  revision           InspectionRevision @relation(fields: [revisionId], references: [id])
+  shares             ReportShare[]
+  createdAt          DateTime           @default(now())
+  updatedAt          DateTime           @updatedAt
+
+  @@unique([tenantId, reportNo])
+  @@unique([revisionId, versionNumber])
+  @@index([tenantId, status, publishedAt])
+}
+
+model ReportShare {
+  id        String    @id @default(uuid()) @db.Uuid
+  tenantId  String    @db.Uuid
+  reportId  String    @db.Uuid
+  tokenHash String    @unique
+  status    String    @default("ACTIVE")
+  expiresAt DateTime
+  revokedAt DateTime?
+  scope     Json      @default("{}")
+  createdBy String    @db.Uuid
+  tenant    Tenant    @relation(fields: [tenantId], references: [id])
+  report    Report    @relation(fields: [reportId], references: [id], onDelete: Cascade)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@index([tenantId, reportId, status])
+}
+
+model AuditEvent {
+  id           String   @id @default(uuid()) @db.Uuid
+  tenantId     String?  @db.Uuid
+  actorId      String?  @db.Uuid
+  action       String
+  resourceType String
+  resourceId   String?
+  requestId    String
+  result       String   @default("SUCCESS")
+  metadata     Json     @default("{}")
+  tenant       Tenant?  @relation(fields: [tenantId], references: [id])
+  createdAt    DateTime @default(now())
+
+  @@index([tenantId, createdAt(sort: Desc)])
+  @@index([tenantId, resourceType, resourceId])
+}
+
+model IdempotencyKey {
+  id          String   @id @default(uuid()) @db.Uuid
+  tenantId    String   @db.Uuid
+  actorId     String   @db.Uuid
+  key         String
+  requestHash String
+  response    Json?
+  expiresAt   DateTime
+  createdAt   DateTime @default(now())
+
+  @@unique([tenantId, actorId, key])
+}
+
+model VehicleLookupRecord {
+  id        String   @id @default(uuid()) @db.Uuid
+  tenantId  String   @db.Uuid
+  actorId   String   @db.Uuid
+  provider  String
+  queryType String
+  queryHash String
+  status    String
+  resultRef String?
+  createdAt DateTime @default(now())
+
+  @@index([tenantId, createdAt(sort: Desc)])
+}

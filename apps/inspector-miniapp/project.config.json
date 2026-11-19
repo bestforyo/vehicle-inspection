@@ -1,0 +1,16 @@
+{
+  "projectname": "jianjian-inspector",
+  "description": "鉴见车辆检测师微信小程序",
+  "appid": "touristappid",
+  "setting": {
+    "urlCheck": true,
+    "es6": true,
+    "enhance": true,
+    "postcss": true,
+    "minified": true,
+    "compileHotReLoad": true
+  },
+  "compileType": "miniprogram",
+  "srcMiniprogramRoot": "dist/",
+  "miniprogramRoot": "dist/"
+}

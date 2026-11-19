@@ -1,0 +1,8 @@
+{
+  "buildCommand": "npm run build -w @jianjian/contracts && npm run build -w @jianjian/templates && npm run build -w @jianjian/web",
+  "outputDirectory": "apps/web/dist",
+  "installCommand": "npm ci",
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/index.html" }
+  ]
+}

@@ -1,0 +1,77 @@
+page { background: #f5f7f5; color: #23343e; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 28px; }
+view, text, button, input, textarea, scroll-view, picker { box-sizing: border-box; }
+button { font-size: 28px; }
+button::after { border: 0; }
+.page { min-height: 100vh; padding: 28px 24px 50px; }
+.page-with-tab { padding-bottom: calc(50px + env(safe-area-inset-bottom)); }
+.brand-row { display: flex; align-items: center; gap: 18px; margin-bottom: 32px; }
+.brand-mark { width: 72px; height: 72px; border: 2px solid #d7ed9f; border-radius: 16px 5px; display: flex; align-items: center; justify-content: center; color: #d7ed9f; background: #172e39; font-size: 36px; }
+.brand-name { display: block; font-size: 38px; font-weight: 600; letter-spacing: 5px; }
+.brand-en { display: block; color: #8d999c; font-size: 16px; letter-spacing: 3px; }
+.eyebrow { color: #82908d; font-size: 19px; letter-spacing: 3px; }
+.page-title { margin: 10px 0; font-size: 44px; font-weight: 600; }
+.page-desc { color: #8d999c; font-size: 24px; line-height: 1.7; }
+.hero { padding: 40px 34px; border-radius: 24px; color: #fff; background: linear-gradient(125deg, #172e39, #376d57); }
+.hero-title { margin: 16px 0; display: block; font-size: 40px; font-weight: 500; }
+.hero-desc { color: #bfd0c7; font-size: 24px; }
+.hero .eyebrow { color: #a9c0b1; }
+.primary, .secondary, .danger { min-height: 88px; padding: 0 28px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 27px; font-weight: 500; line-height: 1.4; }
+.primary { color: #fff; background: #376d57; }
+.secondary { color: #476455; border: 2px solid #dfe6e2; background: #fff; }
+.danger { color: #a6513d; background: #fff1ed; }
+.primary[disabled], .secondary[disabled] { color: #9ca8a0; background: #e8ede8; }
+.card { margin-top: 22px; padding: 28px; border: 2px solid #e9edeb; border-radius: 20px; background: #fff; }
+.card-title { display: block; font-size: 31px; font-weight: 600; }
+.card-desc { margin-top: 10px; display: block; color: #8d999c; font-size: 23px; line-height: 1.6; }
+.card-meta { margin-top: 16px; display: block; color: #5d7c65; font-size: 22px; }
+.row { display: flex; align-items: center; justify-content: space-between; gap: 18px; }
+.metric-grid { margin-top: 22px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.metric { padding: 24px 16px; border-radius: 16px; text-align: center; background: #fff; }
+.metric-value { display: block; font-size: 40px; font-weight: 600; }
+.metric-label { color: #8d999c; font-size: 21px; }
+.entry { margin-top: 22px; padding: 34px; border-radius: 20px; display: flex; align-items: center; justify-content: space-between; background: #eaf0e3; }
+.entry.disabled { color: #87918d; background: #e9eeeb; }
+.entry-title { display: block; font-size: 34px; font-weight: 600; }
+.entry-desc { margin-top: 10px; display: block; color: #7c8d81; font-size: 23px; }
+.order-card { margin-top: 20px; padding: 26px; border: 2px solid #e9edeb; border-radius: 18px; background: #fff; }
+.order-no { color: #8d999c; font-size: 20px; }
+.order-title { margin: 16px 0 8px; display: block; font-size: 30px; font-weight: 600; }
+.order-info { color: #8d999c; font-size: 23px; }
+.status { padding: 6px 12px; border-radius: 8px; color: #57765f; background: #e8f0e5; font-size: 20px; }
+.status-pending { color: #9b723e; background: #f8efe2; }
+.status-return { color: #ac624e; background: #faece8; }
+.form-field { margin-top: 24px; display: block; }
+.form-label { margin-bottom: 12px; display: block; color: #65756f; font-size: 24px; }
+.input, .textarea, .picker-input { width: 100%; min-height: 88px; padding: 20px 22px; border: 2px solid #dfe6e2; border-radius: 14px; color: #23343e; background: #fff; font-size: 27px; }
+.textarea { min-height: 160px; }
+.full-button { width: 100%; margin-top: 30px; }
+.chapter-scroll { margin: 24px -24px 0; padding: 0 24px 12px; white-space: nowrap; }
+.chapter-tab { min-width: 180px; margin-right: 14px; padding: 20px; border-radius: 14px; display: inline-flex; flex-direction: column; color: #7b8a82; background: #fff; }
+.chapter-tab.active { color: #376d57; background: #e4eddf; }
+.chapter-name { font-size: 25px; }
+.chapter-count { margin-top: 6px; font-size: 20px; }
+.progress { height: 12px; margin-top: 24px; overflow: hidden; border-radius: 12px; background: #e4eae5; }
+.progress-inner { height: 100%; background: #376d57; }
+.inspection-item { margin-top: 20px; padding: 24px; border: 2px solid #e9edeb; border-radius: 18px; background: #fff; }
+.inspection-item-title { display: flex; gap: 16px; font-size: 27px; font-weight: 500; line-height: 1.6; }
+.item-index { color: #a0aaa5; font-size: 21px; }
+.option-grid { margin-top: 20px; display: flex; flex-wrap: wrap; gap: 12px; }
+.option { min-height: 70px; margin: 0; padding: 0 20px; border: 2px solid #e0e6e2; border-radius: 12px; display: inline-flex; align-items: center; color: #65756f; background: #fff; font-size: 23px; }
+.option.selected { color: #376d57; border-color: #8eb098; background: #eff5eb; }
+.option.abnormal { color: #ac624e; border-color: #ddb09f; background: #fff3ef; }
+.size-options .option.selected { color: #a77b3d; border-color: #d9ba81; background: #fff8e5; }
+.photo-button { margin-top: 20px; }
+.photo-preview { width: 200px; height: 200px; margin: 16px 16px 0 0; border-radius: 12px; }
+.alert { margin-top: 22px; padding: 24px; border: 2px solid #e0b1a4; border-radius: 16px; color: #a95441; background: #fff5f1; font-size: 24px; line-height: 1.7; }
+.notice { margin-top: 22px; padding: 22px; border-radius: 14px; color: #718078; background: #eaf0e7; font-size: 22px; line-height: 1.7; }
+.empty { padding: 100px 30px; color: #8d999c; text-align: center; font-size: 25px; }
+.report-cover { padding: 45px 34px; color: #fff; background: #203b42; }
+.report-title { margin: 35px 0 18px; display: block; font-size: 46px; }
+.report-no { color: #b6c8bf; font-size: 23px; }
+.report-section { margin-top: 24px; padding: 28px; border-radius: 18px; background: #fff; }
+.report-section-title { margin-bottom: 20px; display: block; font-size: 32px; font-weight: 600; }
+.report-line { padding: 17px 0; border-bottom: 1px solid #edf0ed; display: flex; justify-content: space-between; gap: 22px; font-size: 24px; line-height: 1.6; }
+.report-line-label { color: #8d999c; }
+.report-line-value { max-width: 60%; text-align: right; }
+.abnormal-text { color: #ac624e; }
+.normal-text { color: #4e7a5b; }
