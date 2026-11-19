@@ -8,9 +8,9 @@
       "memory": 1024
     }
   },
-  "rewrites": [
-    { "source": "/api/(.*)", "destination": "/api/$1" },
-    { "source": "/public/(.*)", "destination": "/api/public/$1" },
-    { "source": "/(.*)", "destination": "/index.html" }
+  "routes": [
+    { "handle": "filesystem" },
+    { "src": "/public/(.*)", "dest": "/api/public/$1" },
+    { "src": "/(.*)", "dest": "/index.html" }
   ]
 }
