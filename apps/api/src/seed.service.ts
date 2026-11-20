@@ -16,6 +16,8 @@ export class SeedService implements OnApplicationBootstrap {
   }
 
   async seed() {
+    const existing = await this.prisma.tenant.findUnique({ where: { code: 'DEMO' } });
+    if (existing) return;
     const tenant = await this.prisma.tenant.upsert({
       where: { code: 'DEMO' },
       update: {},
